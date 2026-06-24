@@ -21,6 +21,7 @@
 #include <fused_kernel/core/utils/utils.h>
 #include <fused_kernel/fused_kernel.h>
 #include <fused_kernel/algorithms/image_processing/resize.h>
+#include <fused_kernel/algorithms/image_processing/color_conversion.h>
 #include <fused_kernel/algorithms/basic_ops/vector_ops.h>
 #include <fused_kernel/algorithms/basic_ops/arithmetic.h>
 #include <fused_kernel/core/data/ptr_utils.h>
@@ -91,6 +92,17 @@ namespace fastNPP {
             params[i] = param;
         }
         return fk::SplitWrite<fk::ND::_2D, float3>::build(params);
+    }
+
+    // ===== Color conversion =====
+    // RGBToGray (CCIR 601: 0.299 R + 0.587 G + 0.114 B). Matches nppiRGBToGray
+    // within +/-1 LSB (float rounding on exact-.5 ties; NPP's internal FMA order
+    // is not replicable). C3 (packed RGB) -> C1 gray.
+    constexpr inline auto RGBToGray_8u_C3C1R_Ctx() {
+        return fk::RGB2Gray<uchar3, uchar, fk::GrayFormula::CCIR_601>::build();
+    }
+    constexpr inline auto RGBToGray_32f_C3C1R_Ctx() {
+        return fk::RGB2Gray<float3, float, fk::GrayFormula::CCIR_601>::build();
     }
 
     template <typename... IOps>
