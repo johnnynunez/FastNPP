@@ -173,7 +173,7 @@ int launch() {
     {
         float tn = timeMedian(stream, [&]{ nppiFilterBoxBorder_8u_C1R_Ctx(dnu_a, kW, ssz, so, dnu_b, kW, roi, ms, an, NPP_BORDER_REPLICATE, ctx); });
         float tf = timeMedian(stream, [&]{
-            fk::executeOperations<fk::TransformDPP<>>(fk_stream,
+            fk::executeOperations<fk::TransformDPP<fk::ParArch::GPU_NVIDIA, fk::TF::ENABLED>>(fk_stream,
                 fk::BoxFilter<fk::ND::_2D,uchar,fk::FilterBorder::REPLICATE>::build(usrc,3,3,1,1),
                 fk::PerThreadWrite<fk::ND::_2D,uchar>::build(udst)); });
         row("FilterBoxBorder_8u_C1R 3x3", tn, tf, "parity (small: latency-bound)");
@@ -183,7 +183,7 @@ int launch() {
         NppiSize ms9{9,9}; NppiPoint an9{4,4};
         float tn = timeMedian(stream, [&]{ nppiFilterBoxBorder_8u_C1R_Ctx(dnu_a, kW, ssz, so, dnu_b, kW, roi, ms9, an9, NPP_BORDER_REPLICATE, ctx); });
         float tf = timeMedian(stream, [&]{
-            fk::executeOperations<fk::TransformDPP<>>(fk_stream,
+            fk::executeOperations<fk::TransformDPP<fk::ParArch::GPU_NVIDIA, fk::TF::ENABLED>>(fk_stream,
                 fk::BoxFilter<fk::ND::_2D,uchar,fk::FilterBorder::REPLICATE>::build(usrc,9,9,4,4),
                 fk::PerThreadWrite<fk::ND::_2D,uchar>::build(udst)); });
         row("FilterBoxBorder_8u_C1R 9x9", tn, tf, "larger window: FastNPP ahead");
